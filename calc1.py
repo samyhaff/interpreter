@@ -51,20 +51,35 @@ class Interpreter:
         else:
             self.error()
 
+    def list_to_int(self, l):
+        return int(''.join([str(x.value) for x in l]))
+
     def expr(self):
         self.current_token = self.get_next_token()
 
-        left = self.current_token
+        left_digits = [self.current_token]
         self.eat(INTEGER)
+
+        while self.current_token.type == INTEGER:
+            left_digits.append(self.current_token)
+            self.eat(INTEGER)
 
         op = self.current_token
         self.eat(PLUS)
 
-        right = self.current_token
+        right_digits = [self.current_token]
         self.eat(INTEGER)
+
+        while self.current_token.type == INTEGER:
+            right_digits.append(self.current_token)
+            self.eat(INTEGER)
+
+        left = self.list_to_int(left_digits)
+        right = self.list_to_int(right_digits)
         
-        result = left.value + right.value
+        result = left + right
         return result
+
 
 def main():
     while True:
