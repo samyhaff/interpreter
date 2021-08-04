@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Token types
-INTEGER, PLUS, EOF = 'INTEGER', 'PLUS', 'EOF'
+INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'EOF'
 
 class Token:
     def __init__(self, type, value):
@@ -84,7 +84,6 @@ class Interpreter:
         
         result = left + right
         return result
-
 
 def main():
     while True:
