@@ -18,7 +18,7 @@ class Token:
 
 class Interpreter:
     def __init__(self, text):
-        self.text = text
+        self.text = text.strip()
         self.pos = 0
         self.current_token = None
 
@@ -32,6 +32,11 @@ class Interpreter:
             return Token(EOF, None)
 
         current_char = text[self.pos]
+
+        # ignore whitespaces
+        while current_char == ' ':
+            self.pos += 1
+            current_char = text[self.pos]
 
         if current_char.isdigit():
             token = Token(INTEGER, int(current_char))
