@@ -1,7 +1,9 @@
+#!/usr/bin/env python
+
 # Token types
 # EOF (end-of-file) token is used to indicate that
 # there is no more input left for lexical analysis
-INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
+INTEGER, PLUS, MINUS, MUL, DIV, EOF = 'INTEGER', 'PLUS', 'MINUS', 'MUL', 'DIV', 'EOF'
 
 
 class Token(object):
@@ -30,7 +32,7 @@ class Token(object):
 class Interpreter(object):
     def __init__(self, text):
         # client string input, e.g. "3 + 5", "12 - 5", etc
-        self.text = text
+        self.text = text.strip()
         # self.pos is an index into self.text
         self.pos = 0
         # current token instance
@@ -83,6 +85,14 @@ class Interpreter(object):
                 self.advance()
                 return Token(MINUS, '-')
 
+            if self.current_char == '*':
+                self.advance()
+                return Token(MUL, '*')
+
+            if self.current_char == '/':
+                self.advance()
+                return Token(DIV, '/')
+
             self.error()
 
         return Token(EOF, None)
@@ -102,6 +112,8 @@ class Interpreter(object):
 
         expr -> INTEGER PLUS INTEGER
         expr -> INTEGER MINUS INTEGER
+        expr -> INTEGER MUL INTEGER
+        expr -> INTEGER DIV INTEGER
         """
         # set current token to the first token taken from the input
         self.current_token = self.get_next_token()
@@ -114,8 +126,12 @@ class Interpreter(object):
         op = self.current_token
         if op.type == PLUS:
             self.eat(PLUS)
-        else:
+        elif op.type == MINUS:
             self.eat(MINUS)
+        elif op.type == MUL:
+            self.eat(MUL)
+        elif op.type == DIV:
+            self.eat(DIV)
 
         # we expect the current token to be an integer
         right = self.current_token
@@ -130,8 +146,12 @@ class Interpreter(object):
         # thus effectively interpreting client input
         if op.type == PLUS:
             result = left.value + right.value
-        else:
+        elif op.type == MINUS:
             result = left.value - right.value
+        elif op.type == MUL:
+            result = left.value * right.value
+        else:
+            result = left.value / right.value
         return result
 
 
@@ -140,7 +160,7 @@ def main():
         try:
             # To run under Python3 replace 'raw_input' call
             # with 'input'
-            text = raw_input('calc> ')
+            text = input('calc> ')
         except EOFError:
             break
         if not text:
